@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', handleFormSubmit);
 
-    // --- Lógica del CRUD ---
 
     async function loadPeliculas() {
         try {
@@ -15,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTable(peliculas);
         } catch (error) {
             console.error(error);
-            // Mostrar error en algún lugar de admin.html
         }
     }
 
@@ -99,6 +97,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Carga inicial de datos
     loadPeliculas();
 });

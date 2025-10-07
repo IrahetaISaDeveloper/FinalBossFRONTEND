@@ -2,7 +2,7 @@ const API_BASE_URL = 'http://localhost:8080/api/peliculas';
 
 class PeliculaService {
     async getAll() {
-        const response = await fetch(API_BASE_URL);
+        const response = await fetch(`${API_BASE_URL}/getAllPeliculas`);
         if (!response.ok) {
             throw new Error(`Error al obtener películas: ${response.statusText}`);
         }
@@ -10,7 +10,7 @@ class PeliculaService {
     }
 
     async getById(id) {
-        const response = await fetch(`${API_BASE_URL}/${id}`);
+        const response = await fetch(`${API_BASE_URL}/getPeliculaById${id}`);
         if (!response.ok) {
             throw new Error(`Error al obtener la película con ID ${id}: ${response.statusText}`);
         }
@@ -18,7 +18,7 @@ class PeliculaService {
     }
 
     async create(peliculaData) {
-        const response = await fetch(API_BASE_URL, {
+        const response = await fetch(`${API_BASE_URL}/newPelicula`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(peliculaData),
@@ -31,7 +31,7 @@ class PeliculaService {
     }
 
     async update(id, peliculaData) {
-        const response = await fetch(`${API_BASE_URL}/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/updatePelicula${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(peliculaData),
@@ -43,7 +43,7 @@ class PeliculaService {
     }
 
     async delete(id) {
-        const response = await fetch(`${API_BASE_URL}/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/deletePelicula${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) {
