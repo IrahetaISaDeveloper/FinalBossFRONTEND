@@ -1,20 +1,47 @@
+// Archivo: js/PeliculaService.js
+
 const API_BASE_URL = 'http://localhost:8080/api/peliculas';
 
 class PeliculaService {
+    
+    async #handleResponse(response) {
+        if (!response.ok) {
+            let errorDetail = `Error: ${response.status} - ${response.statusText}`;
+            try {
+                const errorBody = await response.json();
+                if (errorBody.message) {
+                    errorDetail = errorBody.message;
+                } else if (errorBody.detail) {
+                    errorDetail = errorBody.detail;
+                } else if (errorBody.Errors && Object.keys(errorBody.Errors).length > 0) {
+                     // Concatenar errores de validación si existen
+                     const validationErrors = Object.entries(errorBody.Errors)
+                        .map(([field, message]) => `${field}: ${message}`)
+                        .join('. ');
+                    errorDetail = `Errores de Validación: ${validationErrors}`;
+                }
+            } catch (e) {
+                // El cuerpo no es JSON, se usa el mensaje HTTP por defecto
+            }
+            throw new Error(errorDetail);
+        }
+        
+        if (response.status !== 204) {
+             const result = await response.json();
+             return result.data || result; 
+        }
+        
+        return null;
+    }
+    
     async getAll() {
         const response = await fetch(`${API_BASE_URL}/getAllPeliculas`);
-        if (!response.ok) {
-            throw new Error(`Error al obtener películas: ${response.statusText}`);
-        }
-        return response.json();
+        return this.#handleResponse(response);
     }
 
     async getById(id) {
-        const response = await fetch(`${API_BASE_URL}/getPeliculaById${id}`);
-        if (!response.ok) {
-            throw new Error(`Error al obtener la película con ID ${id}: ${response.statusText}`);
-        }
-        return response.json();
+        const response = await fetch(`${API_BASE_URL}/getPeliculaById/${id}`);
+        return this.#handleResponse(response);
     }
 
     async create(peliculaData) {
@@ -23,31 +50,22 @@ class PeliculaService {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(peliculaData),
         });
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(`Error al crear película: ${response.statusText} - ${error.message}`);
-        }
-        return response.json();
+        return this.#handleResponse(response);
     }
 
     async update(id, peliculaData) {
-        const response = await fetch(`${API_BASE_URL}/updatePelicula${id}`, {
+        const response = await fetch(`${API_BASE_URL}/updatePelicula/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(peliculaData),
         });
-        if (!response.ok) {
-            throw new Error(`Error al actualizar la película con ID ${id}: ${response.statusText}`);
-        }
-        return response.json();
+        return this.#handleResponse(response);
     }
 
     async delete(id) {
-        const response = await fetch(`${API_BASE_URL}/deletePelicula${id}`, {
+        const response = await fetch(`${API_BASE_URL}/deletePelicula/${id}`, {
             method: 'DELETE',
         });
-        if (!response.ok) {
-            throw new Error(`Error al eliminar la película con ID ${id}: ${response.statusText}`);
-        }
+        return this.#handleResponse(response);
     }
 }
