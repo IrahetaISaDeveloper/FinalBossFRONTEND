@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/peliculas';
+const API_BASE_URL = 'https://localhost:8080/api/peliculas';
 
 class PeliculaService {
     
