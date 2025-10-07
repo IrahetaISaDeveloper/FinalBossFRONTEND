@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const service = new PeliculaService();
     const form = document.getElementById('peliculaForm');
