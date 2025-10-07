@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('director').value = pelicula.director;
             document.getElementById('genero').value = pelicula.genero;
             document.getElementById('anioEstreno').value = pelicula.anioEstreno;
-            document.getElementById('duracionMin').value = pelicula.duracionMin;
+            document.getElementById('duracionMin').value = pelicula.duracionMinutos;
             
             formTitle.textContent = `Editar Película (ID: ${id})`;
             currentEditId = id;
