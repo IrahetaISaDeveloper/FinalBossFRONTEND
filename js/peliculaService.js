@@ -1,67 +1,51 @@
-const API_BASE_URL = 'https://localhost:8080/api/peliculas';
+	const API_BASE = 'http:localhost:8080/api/peliculas';
 
-class PeliculaService {
-    
-    async #handleResponse(response) {
-        if (!response.ok) {
-            let errorDetail = `Error: ${response.status} - ${response.statusText}`;
-            try {
-                const errorBody = await response.json();
-                if (errorBody.message) {
-                    errorDetail = errorBody.message;
-                } else if (errorBody.detail) {
-                    errorDetail = errorBody.detail;
-                } else if (errorBody.Errors && Object.keys(errorBody.Errors).length > 0) {
-                    const validationErrors = Object.entries(errorBody.Errors)
-                        .map(([field, message]) => `${field}: ${message}`)
-                        .join('. ');
-                    errorDetail = `Errores de Validación: ${validationErrors}`;
-                }
-            } catch (e) {
-            }
-            throw new Error(errorDetail);
-        }
-        
-        if (response.status !== 204) {
-             const result = await response.json();
-             return result.data || result; 
-        }
-        
-        return null;
-    }
-    
-    async getAll() {
-        const response = await fetch(`${API_BASE_URL}/getAllPeliculas`);
-        return this.#handleResponse(response);
-    }
 
-    async getById(id) {
-        const response = await fetch(`${API_BASE_URL}/getPeliculaById/${id}`);
-        return this.#handleResponse(response);
-    }
+	async function getAllPeliculas() {
+		const res = await fetch(`${API_BASE}/getAllPeliculas`,{
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json'}
+		}
+		);
+		
+	}
 
-    async create(peliculaData) {
-        const response = await fetch(`${API_BASE_URL}/newPelicula`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(peliculaData),
-        });
-        return this.#handleResponse(response);
-    }
+	async function getPeliculaById(id) {
+		const res = await fetch(`${API_BASE}/getPeliculaById/${encodeURIComponent(id)}`, {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
 
-    async update(id, peliculaData) {
-        const response = await fetch(`${API_BASE_URL}/updatePelicula/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(peliculaData),
-        });
-        return this.#handleResponse(response);
-    }
+	async function createPelicula(pelicula) {
+		const res = await fetch(`${API_BASE}/newPelicula`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(pelicula)
+		});
+		return handleResponse(res);
+	}
 
-    async delete(id) {
-        const response = await fetch(`${API_BASE_URL}/deletePelicula/${id}`, {
-            method: 'DELETE',
-        });
-        return this.#handleResponse(response);
-    }
-}
+	async function updatePelicula(id, pelicula) {
+		const res = await fetch(`${API_BASE}/updatePelicula/${encodeURIComponent(id)}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(pelicula)
+		});
+		return handleResponse(res);
+	}
+
+	async function deletePelicula(id) {
+		const res = await fetch(`${API_BASE}/deletePelicula/${encodeURIComponent(id)}`, {
+			method: 'DELETE'
+		});
+		return handleResponse(res);
+	}
+
+	global.peliculaService = {
+		getAllPeliculas,
+		getPeliculaById,
+		createPelicula,
+		updatePelicula,
+		deletePelicula
+	};
