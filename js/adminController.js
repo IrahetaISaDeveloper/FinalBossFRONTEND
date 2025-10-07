@@ -1,3 +1,5 @@
+// Archivo: js/AdminController.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const service = new PeliculaService();
     const form = document.getElementById('peliculaForm');
@@ -7,6 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', handleFormSubmit);
 
+    function showAlert(icon, title, text) {
+        Swal.fire({
+            icon: icon,
+            title: title,
+            text: text,
+            confirmButtonColor: '#0d6efd'
+        });
+    }
 
     async function loadPeliculas() {
         try {
@@ -14,11 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTable(peliculas);
         } catch (error) {
             console.error(error);
+            showAlert('error', 'Error de Conexión', `No se pudo conectar a la API. (${error.message})`);
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error al cargar datos: ${error.message}</td></tr>`;
         }
     }
 
     function renderTable(peliculas) {
         tableBody.innerHTML = '';
+        if (!peliculas || peliculas.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No hay películas registradas.</td></tr>`;
+            return;
+        }
+
         peliculas.forEach(pelicula => {
             const row = tableBody.insertRow();
             row.insertCell().textContent = pelicula.idPelicula;
@@ -51,18 +68,19 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (currentEditId) {
                 await service.update(currentEditId, data);
-                alert('Película actualizada con éxito.');
+                showAlert('success', 'Actualización Exitosa', 'Película actualizada con éxito.');
             } else {
                 await service.create(data);
-                alert('Película creada con éxito.');
+                showAlert('success', 'Creación Exitosa', 'Película creada con éxito.');
             }
+            
             form.reset();
-            formTitle.textContent = 'Crear Nueva Película';
+            formTitle.textContent = 'Crear Película';
             currentEditId = null;
             loadPeliculas();
         } catch (error) {
-            alert(`Error en la operación: ${error.message}`);
             console.error(error);
+            showAlert('error', 'Error de Operación', error.message);
         }
     }
     
@@ -78,21 +96,34 @@ document.addEventListener('DOMContentLoaded', () => {
             
             formTitle.textContent = `Editar Película (ID: ${id})`;
             currentEditId = id;
+            showAlert('info', 'Modo Edición', `Editando película con ID ${id}`);
         } catch (error) {
-            alert(`Error al cargar datos para edición: ${error.message}`);
+            showAlert('error', 'Error al Cargar', error.message);
         }
     }
 
     async function handleDelete(event) {
         const id = event.target.dataset.id;
-        if (confirm(`¿Estás seguro de eliminar la película con ID ${id}?`)) {
+        
+        const result = await Swal.fire({
+            title: `¿Eliminar ID ${id}?`,
+            text: "No podrás revertir esto.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
             try {
                 await service.delete(id);
-                alert('Película eliminada con éxito.');
+                showAlert('success', 'Eliminado', 'Película eliminada con éxito.');
                 loadPeliculas();
             } catch (error) {
-                alert(`Error al eliminar: ${error.message}`);
                 console.error(error);
+                showAlert('error', 'Error al Eliminar', error.message);
             }
         }
     }
