@@ -1,5 +1,3 @@
-// Archivo: js/PeliculaService.js
-
 const API_BASE_URL = 'http://localhost:8080/api/peliculas';
 
 class PeliculaService {
@@ -14,14 +12,12 @@ class PeliculaService {
                 } else if (errorBody.detail) {
                     errorDetail = errorBody.detail;
                 } else if (errorBody.Errors && Object.keys(errorBody.Errors).length > 0) {
-                     // Concatenar errores de validación si existen
-                     const validationErrors = Object.entries(errorBody.Errors)
+                    const validationErrors = Object.entries(errorBody.Errors)
                         .map(([field, message]) => `${field}: ${message}`)
                         .join('. ');
                     errorDetail = `Errores de Validación: ${validationErrors}`;
                 }
             } catch (e) {
-                // El cuerpo no es JSON, se usa el mensaje HTTP por defecto
             }
             throw new Error(errorDetail);
         }

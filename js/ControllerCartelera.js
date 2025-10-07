@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h6 class="card-subtitle mb-2 text-muted">${pelicula.director}</h6>
                     <p class="card-text">
                         <strong>Género:</strong> ${pelicula.genero}<br>
-                        <strong>Duración:</strong> ${pelicula.duracionMin} min
+                        <strong>Duración:</strong> ${pelicula.duracionMinutos} min
                     </p>
                     <a href="#" class="btn btn-sm btn-outline-primary">Ver detalles</a>
                 </div>
